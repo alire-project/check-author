@@ -47,7 +47,7 @@ async function run() {
     for (const f of changedFiles){
       await checkFile(client, prLogin, prBaseRef, f.filename, f.status);
     }
-    
+
   } catch (error) {
     core.error(error);
     core.setFailed(error.message);
@@ -65,7 +65,7 @@ function getPr() {
 
     case "rerequested":
       const pullRequests = github.context.payload.check_suite.pull_requests;
-     
+
       if (pullRequests.length > 1) {
         core.setFailed('More than one pull request, exiting');
         return undefined;
@@ -89,6 +89,11 @@ async function checkFile(
   status : string)
 {
   console.log("Checking file: '" + fileName + "' (" + status + ")");
+
+  if (!fileName.endsWith(".toml")) {
+      core.warning("Not a TOML file: '" + fileName);
+      return;
+  }
 
   try {
     var parsed = toml.parse(await getContent(client, ref, fileName, status));
@@ -119,7 +124,7 @@ async function getContent(
   ref   : string,
   fileName : string,
   status : string)
-: Promise<string> 
+: Promise<string>
 {
   switch(status) {
     case "added":
@@ -174,4 +179,3 @@ async function fetchOriginal(
   return Buffer.from(response.data.content, 'base64').toString();
 }
 run();
-
