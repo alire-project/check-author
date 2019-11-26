@@ -58,6 +58,8 @@ function getPr() {
 
   switch(github.context.payload.action){
     case "opened":
+    case "reopened":
+    case "synchronize":
       return github.context.payload.pull_request;
       break;
 
