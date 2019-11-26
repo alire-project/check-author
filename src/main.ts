@@ -13,25 +13,25 @@ async function run() {
     const pr = getPr();
     if (!pr) {
       core.setFailed('Could not get pull request from context, exiting');
-      return;
+      return Promise.resolve();
     }
 
     const prNumber = pr.number;
     if (!prNumber) {
       core.setFailed('Could not get pull request number from context, exiting');
-      return;
+      return Promise.resolve();
     }
 
     const prBaseRef = pr.base.ref;
     if (!prBaseRef) {
       core.setFailed('Could not get pull request base ref from context, exiting');
-      return;
+      return Promise.resolve();
     }
 
     const prLogin = pr.user.login;
     if (!prLogin) {
       core.setFailed('Could not get pull request author from context, exiting');
-      return;
+      return Promise.resolve();
     }
 
     const client = new github.GitHub(token);
@@ -41,7 +41,7 @@ async function run() {
 
     if (changedFiles.length <= 0) {
       core.setFailed('No file changed in this pull request, exiting');
-      return;
+      return Promise.resolve();
     }
 
     for (const f of changedFiles){
@@ -92,7 +92,7 @@ async function checkFile(
 
   if (!fileName.endsWith(".toml")) {
       core.warning("Not a TOML file: '" + fileName);
-      return;
+      return Promise.resolve();
   }
 
   try {
@@ -103,17 +103,17 @@ async function checkFile(
 
   if (!parsed.general) {
     core.setFailed("Missing 'general' in '" + fileName + "'" );
-    return;
+    return Promise.resolve();
   }
 
   if (!parsed.general["maintainers-logins"]) {
     core.setFailed("Missing 'general.maintainers-logins' in '" + fileName + "'" );
-    return;
+    return Promise.resolve();
   }
 
   if (parsed.general["maintainers-logins"].indexOf(actor) <= -1) {
     core.setFailed("'" + actor + "' not in maintainers-logins for '" + fileName + "'" );
-    return;
+    return Promise.resolve();
   } else {
     console.log ("'" + actor + "' found in maintainers-logins for '" + fileName + "'" );
   }
@@ -141,7 +141,7 @@ async function getContent(
     default:
       core.setFailed("Unsupported file status : '" + status + "'");
   }
-  return "";
+  return Promise.resolve("");
 }
 
 async function getChangedFiles(
