@@ -9,7 +9,6 @@ import * as yaml from 'js-yaml';
 async function run() {
   try {
     const token = core.getInput('repo-token', {required: true});
-    const actor = github.context.actor
 
     const pr = getPr();
     if (!pr) {
@@ -29,6 +28,12 @@ async function run() {
       return;
     }
 
+    const prLogin = pr.user.login;
+    if (!prLogin) {
+      core.setFailed('Could not get pull request author from context, exiting');
+      return;
+    }
+
     const client = new github.GitHub(token);
 
     core.debug(`fetching changed files for pr #${prNumber}`);
@@ -40,7 +45,7 @@ async function run() {
     }
 
     for (const f of changedFiles){
-      await checkFile(client, actor, prBaseRef, f.filename, f.status);
+      await checkFile(client, prLogin, prBaseRef, f.filename, f.status);
     }
     
   } catch (error) {
@@ -71,39 +76,6 @@ function getPr() {
       core.setFailed("Unknown payload action: '" + github.context.payload.action + "'");
   }
 
-
-}
-
-function getPrNumber(): number | undefined {
-
-  switch(github.context.payload.action){
-    case "openned":
-      const pullRequest = github.context.payload.pull_request;
-      if (!pullRequest) {
-        return undefined;
-      }
-      console.log(pullRequest);
-     
-      return pullRequest.number;
-      break;
-
-    case "rerequested":
-      const pullRequests = github.context.payload.check_suite.pull_requests;
-     
-      if (pullRequests.length > 1) {
-        core.setFailed('More than one pull request, exiting');
-        return undefined;
-      }
-     
-      if (pullRequests[0]) {
-        console.log(pullRequests[0]);
-        return pullRequests[0].number;
-      }
-      break;
-
-    default:
-      core.setFailed("Unknown payload action: '" + github.context.payload.action + "'");
-  }
 
 }
 
