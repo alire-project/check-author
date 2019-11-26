@@ -127,12 +127,12 @@ async function checkFile(
     return;
   }
 
-  if (!parsed.general.maintainers_login) {
-    core.setFailed("Missing 'general.maintainers_login' in '" + fileName + "'" );
+  if (!parsed.general["maintainers-logins"]) {
+    core.setFailed("Missing 'general.maintainers-logins' in '" + fileName + "'" );
     return;
   }
 
-  if (parsed.general.maintainers_login.indexOf(actor) <= -1) {
+  if (parsed.general["maintainers-logins"].indexOf(actor) <= -1) {
     core.setFailed("'" + actor + "' not in maintainers_login for '" + fileName + "'" );
     return;
   } else {
