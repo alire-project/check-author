@@ -133,10 +133,10 @@ async function checkFile(
   }
 
   if (parsed.general["maintainers-logins"].indexOf(actor) <= -1) {
-    core.setFailed("'" + actor + "' not in maintainers_login for '" + fileName + "'" );
+    core.setFailed("'" + actor + "' not in maintainers-logins for '" + fileName + "'" );
     return;
   } else {
-    console.log ("'" + actor + "' found in maintainers_login for '" + fileName + "'" );
+    console.log ("'" + actor + "' found in maintainers-logins for '" + fileName + "'" );
   }
 }
 
