@@ -101,17 +101,12 @@ async function checkFile(
     core.setFailed("Parsing error on line " + e.line + ", column " + e.column + ": " + e.message);
   }
 
-  if (!parsed.general) {
-    core.setFailed("Missing 'general' in '" + fileName + "'" );
+  if (!parsed["maintainers-logins"]) {
+    core.setFailed("Missing 'maintainers-logins' in '" + fileName + "'" );
     return Promise.resolve();
   }
 
-  if (!parsed.general["maintainers-logins"]) {
-    core.setFailed("Missing 'general.maintainers-logins' in '" + fileName + "'" );
-    return Promise.resolve();
-  }
-
-  if (parsed.general["maintainers-logins"].indexOf(actor) <= -1) {
+  if (parsed["maintainers-logins"].indexOf(actor) <= -1) {
     core.setFailed("'" + actor + "' not in maintainers-logins for '" + fileName + "'" );
     return Promise.resolve();
   } else {
